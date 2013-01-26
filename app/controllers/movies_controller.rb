@@ -7,38 +7,28 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @selected_ratings = (params[:ratings].present? ? params[:ratings] : [])
-    @ratings = []
+    @selected_ratings = (params[:ratings].present? ? params[:ratings] : Movie.ratings_hash)
+    #@ratings = @selected_ratings.keys
     @all_ratings = Movie.ratings_list
+
     if not(params[:ratings].present?)
-      if not(params[:sorted].present?)
-        @movies = Movie.all
-        @title_sort = ""
-        @date_sort = ""
-      elsif params[:sorted] == "title"
-        @movies = Movie.order("title ASC")
-        @title_sort = "hilite"
-        @date_sort = ""
-      elsif params[:sorted] == "date"
-        @movies = Movie.order("release_date ASC")
-        @title_sort = ""
-        @date_sort = "hilite"
-      end
-    else
-      @ratings = params[:ratings].keys
-      if not(params[:sorted].present?)
-        @movies = Movie.where(:rating => @ratings)
-        @title_sort = ""
-        @date_sort = ""
-      elsif params[:sorted] == "title"
-        @movies = Movie.where(:rating => @ratings).order("title ASC")
-        @title_sort = "hilite"
-        @date_sort = ""
-      elsif params[:sorted] == "date"
-        @movies = Movie.where(:rating => @ratings).order("release_date ASC")
-        @title_sort = ""
-        @date_sort = "hilite"
-      end
+      redirect_to movies_path(params.merge(:ratings => Movie.ratings_hash))
+    end
+    #@selected_ratings = params[:ratings]
+    @ratings = @selected_ratings.keys
+
+    if not(params[:sorted].present?)
+      @movies = Movie.where(:rating => @ratings)
+      @title_sort = ""
+      @date_sort = ""
+    elsif params[:sorted] == "title"
+      @movies = Movie.where(:rating => @ratings).order("title ASC")
+      @title_sort = "hilite"
+      @date_sort = ""
+    elsif params[:sorted] == "date"
+      @movies = Movie.where(:rating => @ratings).order("release_date ASC")
+      @title_sort = ""
+      @date_sort = "hilite"
     end
   end
 
