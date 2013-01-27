@@ -14,20 +14,20 @@ class MoviesController < ApplicationController
     if not(params[:ratings].present?)
       if not(session[:ratings].present?)
         flash.keep
-        redirect_to movies_path(params.merge(:ratings => Movie.ratings_hash))
+        redirect_to movies_path(params.merge(:ratings => Movie.ratings_hash)) and return
       end
       if not(session[:sorted].present?)
         flash.keep
-        redirect_to movies_path(:ratings => session[:ratings])
+        redirect_to movies_path(:ratings => session[:ratings]) and return
       else
         flash.keep
-        redirect_to movies_path(:ratings => session[:ratings], :sorted => session[:sorted])
+        redirect_to movies_path(:ratings => session[:ratings], :sorted => session[:sorted]) and return
       end
     else
       if not(params[:sorted].present?)
         if session[:sorted].present?
           flash.keep
-          redirect_to movies_path(params.merge(:sorted => session[:sorted]))
+          redirect_to movies_path(params.merge(:sorted => session[:sorted])) and return
         end
       end
     end
