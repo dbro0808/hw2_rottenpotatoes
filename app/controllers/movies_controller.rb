@@ -12,20 +12,40 @@ class MoviesController < ApplicationController
     @all_ratings = Movie.ratings_list
 
     if not(params[:ratings].present?)
-      redirect_to movies_path(params.merge(:ratings => Movie.ratings_hash))
+      if not(session[:ratings].present?)
+        flash.keep
+        redirect_to movies_path(params.merge(:ratings => Movie.ratings_hash))
+      end
+      if not(session[:sorted].present?)
+        flash.keep
+        redirect_to movies_path(:ratings => session[:ratings])
+      else
+        flash.keep
+        redirect_to movies_path(:ratings => session[:ratings], :sorted => session[:sorted])
+      end
+    else
+      if not(params[:sorted].present?)
+        if session[:sorted].present?
+          flash.keep
+          redirect_to movies_path(params.merge(:sorted => session[:sorted]))
+        end
+      end
     end
     #@selected_ratings = params[:ratings]
     @ratings = @selected_ratings.keys
+    session[:ratings] = params[:ratings]
 
     if not(params[:sorted].present?)
       @movies = Movie.where(:rating => @ratings)
       @title_sort = ""
       @date_sort = ""
     elsif params[:sorted] == "title"
+      session[:sorted] = "title"
       @movies = Movie.where(:rating => @ratings).order("title ASC")
       @title_sort = "hilite"
       @date_sort = ""
     elsif params[:sorted] == "date"
+      session[:sorted] = "date"
       @movies = Movie.where(:rating => @ratings).order("release_date ASC")
       @title_sort = ""
       @date_sort = "hilite"
